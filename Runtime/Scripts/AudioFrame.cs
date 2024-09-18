@@ -26,7 +26,9 @@ namespace LiveKit
         private IntPtr _dataPtr;
         public IntPtr Data => _dataPtr;
 
-        public int Length => (int) (SamplesPerChannel * NumChannels * sizeof(short));
+        public int Length => (int)(SamplesPerChannel * NumChannels * sizeof(short));
+
+        private NativeArray<byte> _dataArray;
 
         internal AudioFrame(OwnedAudioFrameBuffer info)
         {
@@ -38,14 +40,15 @@ namespace LiveKit
             _dataPtr = (IntPtr)_info.DataPtr;
         }
 
-        internal AudioFrame(uint sampleRate, uint numChannels, uint samplesPerChannel) {
+        internal AudioFrame(uint sampleRate, uint numChannels, uint samplesPerChannel)
+        {
             _sampleRate = sampleRate;
             _numChannels = numChannels;
             _samplesPerChannel = samplesPerChannel;
             unsafe
             {
-                var data = new NativeArray<byte>(Length, Allocator.Persistent);
-                _dataPtr = (IntPtr)NativeArrayUnsafeUtility.GetUnsafePtr(data);
+                _dataArray = new NativeArray<byte>(Length, Allocator.Persistent);
+                _dataPtr = (IntPtr)NativeArrayUnsafeUtility.GetUnsafePtr(_dataArray);
             }
         }
         ~AudioFrame()
@@ -61,10 +64,20 @@ namespace LiveKit
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+
+            if (_disposed) return;
+
+            if (disposing)
             {
-                _disposed = true;
+                _handle?.Dispose();
             }
+
+            if (_dataArray.IsCreated)
+            {
+                _dataArray.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }

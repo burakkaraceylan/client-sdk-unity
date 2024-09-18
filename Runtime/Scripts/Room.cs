@@ -48,7 +48,7 @@ namespace LiveKit
         {
             var proto = new Proto.RtcConfig();
 
-            switch(ContinualGatheringPolicy)
+            switch (ContinualGatheringPolicy)
             {
                 case ContinualGatheringPolicy.GATHER_ONCE:
                     proto.ContinualGatheringPolicy = Proto.ContinualGatheringPolicy.GatherOnce;
@@ -58,7 +58,7 @@ namespace LiveKit
                     break;
             }
 
-            switch(IceTransportType)
+            switch (IceTransportType)
             {
                 case IceTransportType.TRANSPORT_ALL:
                     proto.IceTransportType = Proto.IceTransportType.TransportAll;
@@ -71,7 +71,7 @@ namespace LiveKit
                     break;
             }
 
-            foreach(var item in IceServers)
+            foreach (var item in IceServers)
             {
                 proto.IceServers.Add(item.ToProto());
             }
@@ -166,7 +166,7 @@ namespace LiveKit
             Utils.Debug($"Connect response.... {response}");
             return new ConnectInstruction(res.Connect.AsyncId, this, options);
         }
-        
+
         public void Disconnect()
         {
             if (this.RoomHandle == null)
@@ -256,7 +256,7 @@ namespace LiveKit
                         var participant = RemoteParticipants[e.TrackSubscribed.ParticipantIdentity];
                         var publication = participant.Tracks[info.Sid];
 
-                        if(publication == null)
+                        if (publication == null)
                         {
                             participant._tracks.Add(publication.Sid, publication);
                         }
@@ -348,7 +348,7 @@ namespace LiveKit
                 case RoomEvent.MessageOneofCase.DataPacketReceived:
                     {
                         var valueType = e.DataPacketReceived.ValueCase;
-                        switch(valueType)
+                        switch (valueType)
                         {
                             case DataPacketReceived.ValueOneofCase.None:
                                 //do nothing.
@@ -482,7 +482,7 @@ namespace LiveKit
             bool success = string.IsNullOrEmpty(e.Error);
             if (success)
             {
-                if(_roomOptions.E2EE != null)
+                if (_roomOptions.E2EE != null)
                 {
                     _room.E2EEManager = new E2EEManager(_room.RoomHandle, _roomOptions.E2EE);
                 }
